@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Project from "../../components/Project.jsx";
 import { myProjects } from "../../constants/index.js";
 import { motion, useMotionValue, useSpring } from "motion/react";
+import {useNavigate} from "react-router-dom";
 
 const Projects = () => {
     const x = useMotionValue(0);
@@ -14,6 +15,8 @@ const Projects = () => {
     };
     const [preview, setPreview] = useState(null);
 
+    const navigate = useNavigate();
+
     return (
         <section
             onMouseMove={handleMouseMove}
@@ -22,6 +25,7 @@ const Projects = () => {
             <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between">
                 <h2 className="text-heading">Projects</h2>
                     <button
+                        onClick={() => navigate("/projects")}
                         className="mt-4 md:mt-0 inline-flex items-center gap-1 cursor-pointer hover-animation text-xl bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300"                    >
                         See More
                         <img src="../../../public/assets/arrow-right.svg" className="w-5" />

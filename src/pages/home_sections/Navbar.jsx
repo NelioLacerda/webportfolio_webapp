@@ -1,45 +1,58 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion } from "motion/react";
+import {useNavigate} from "react-router-dom";
 
-function Navigation() {
+function Navigation({ onNavigate }) {
+    const navigate = useNavigate();
+
     return (
         <ul className="nav-ul">
             <li className="nav-li">
-                <a className="nav-link" href="#home">
+                <button type="button" className="nav-link cursor-pointer" onClick={() => navigate("/home")}>
                     Home
-                </a>
+                </button>
             </li>
             <li className="nav-li">
-                <a className="nav-link" href="#about">
+                <button type="button" className="nav-link cursor-pointer" onClick={() => onNavigate("about")}>
                     About
-                </a>
+                </button>
             </li>
             <li className="nav-li">
-                <a className="nav-link" href="#work">
-                    Projects
-                </a>
-            </li>
-            <li className="nav-li">
-                <a className="nav-link" href="#contact">
-                    Blog
-                </a>
-            </li>
-            <li className="nav-li">
-                <a className="nav-link" href="#contact">
+                <button type="button" className="nav-link cursor-pointer" onClick={() => onNavigate("experiences")}>
                     Carrier
-                </a>
+                </button>
             </li>
             <li className="nav-li">
-                <a className="nav-link" href="#contact">
+                <button type="button" className="nav-link cursor-pointer" onClick={() => onNavigate("contact")}>
                     Contact
-                </a>
+                </button>
+            </li>
+            <li className="nav-li">
+                <button type="button" className="nav-link cursor-pointer" onClick={() =>navigate("/projects")}>
+                    Projects
+                </button>
+            </li>
+            <li className="nav-li">
+                <button type="button" className="nav-link cursor-pointer" onClick={() =>navigate("/blog")}>
+                    Blog
+                </button>
             </li>
         </ul>
     );
 }
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+
+    const handleNavigate = (id) => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        setIsOpen(false);
+    };
+
     return (
         <div className="fixed inset-x-0 z-20 w-full backdrop-blur-lg bg-primary/40">
             <div className="mx-auto c-space max-w-7xl">
@@ -61,7 +74,7 @@ const Navbar = () => {
                         )}
                     </button>
                     <nav className="hidden sm:flex">
-                        <Navigation />
+                        <Navigation onNavigate={handleNavigate} />
                     </nav>
                 </div>
             </div>
@@ -74,7 +87,7 @@ const Navbar = () => {
                     transition={{ duration: 1 }}
                 >
                     <nav className="pb-5">
-                        <Navigation />
+                        <Navigation onNavigate={handleNavigate} />
                     </nav>
                 </motion.div>
             )}
