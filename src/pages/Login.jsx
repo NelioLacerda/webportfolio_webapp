@@ -2,17 +2,47 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import {Particles} from "../components/Particles.jsx";
+import {Link} from "react-router-dom";
+import PasswordField from "../components/PasswordField .jsx";
+import FormField from "../components/FormField .jsx";
 
 const Login = () => {
     const [loading, setLoading] = useState(false);
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const validate = () => {
+        const e = {};
+        if (!email.trim()) e.email = "Please fill your e-mail.";
+        else if (!/^\S+@\S+\.\S+$/.test(email)) e.email = "Invalid e-mail.";
+        if (!password || password.length < 6)
+            e.password = "Password must be at least 6 characters long.";
+        return e;
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            await new Promise((r) => setTimeout(r, 900));
-        } catch (err) {
-            console.error(err);
+
+            /*
+            const response = await axiosConfig.post(API_ENDPOINTS.LOGIN, {email, password});
+
+            const {token, user} = response.data;
+            if (token) {
+                console.log("Token:", token);
+                localStorage.setItem("token", token);
+                setUser(user);
+                navigate("/dashboard");
+            }
+             */
+        } catch (error) {
+            console.error("Error logging in:", error);
+            if (error.response && error.response.data.message) {
+                setError(error.response.data.message);
+            } else setError("An error occurred while logging in. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -44,62 +74,42 @@ const Login = () => {
                 <div className="rounded-2xl ring ring-gray-700/60 bg-storm/80 backdrop-blur border border-white/5 shadow-xl p-6 sm:p-8">
                     <header className="mb-6 sm:mb-8">
                         <h1 className="text-2xl sm:text-3xl font-light tracking-tight">
-                            Bem-vindo de volta
+                            Welcome Back!!
                         </h1>
                         <p className="text-sm text-neutral-400 mt-1">
-                            Acesse sua conta para continuar
+                            Please log in to your account to continue
                         </p>
                     </header>
 
                     <form onSubmit={onSubmit} className="space-y-4 sm:space-y-5">
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-light">
-                                E-mail
-                            </label>
-                            <div className="relative">
-                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
-                                    <Mail size={18} />
-                                </div>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    required
-                                    autoComplete="email"
-                                    className="w-full rounded-lg bg-black/20 text-sm sm:text-base placeholder-neutral-500 pl-10 pr-3 py-2.5 ring-1 ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-gray-500/70 transition"
-                                    placeholder="voce@exemplo.com"
-                                />
-                            </div>
-                        </div>
+                        <FormField
+                            id="email"
+                            label="E-mail"
+                            required
+                            placeholder="JohnDoe@email.com"
+                            icon={Mail}
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            error={error}
+                            autoComplete="email"
+                        />
 
-                        <div className="space-y-2">
-                            <label htmlFor="password" className="text-sm font-light">
-                                Senha
-                            </label>
-                            <div className="relative">
-                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-400">
-                                    <Lock size={18} />
-                                </div>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    autoComplete="current-password"
-                                    className="w-full rounded-lg bg-black/20 text-sm sm:text-base placeholder-neutral-500 pl-10 pr-3 py-2.5 ring-1 ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-gray-500/70 transition"
-                                    placeholder="Sua senha"
-                                />
-                            </div>
-                        </div>
+                        <PasswordField
+                            id="password"
+                            label="Password"
+                            required
+                            autoComplete="new-password"
+                        />
 
                         <div className="flex items-center justify-between pt-2">
                             <button
                                 type="button"
-                                className="text-sm text-neutral-300 hover:text-white transition"
+                                className="text-sm cursor-pointer text-neutral-300 hover:text-white transition"
                                 onClick={() => {
                                 }}
                             >
-                                Esqueci minha senha
+                                I forgot my password
                             </button>
                         </div>
 
@@ -108,29 +118,27 @@ const Login = () => {
                             whileHover={{ scale: loading ? 1 : 1.02 }}
                             whileTap={{ scale: loading ? 1 : 0.98 }}
                             disabled={loading}
-                            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-white/90 text-black font-medium py-2.5 transition hover:bg-white disabled:opacity-70"
+                            className="w-full cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg bg-white/90 text-black font-medium py-2.5 transition hover:bg-white disabled:opacity-70"
                         >
                             {loading ? (
                                 <>
                                     <Loader2 className="animate-spin" size={18} />
-                                    Entrando...
+                                    Logging in...
                                 </>
                             ) : (
-                                "Entrar"
+                                "Login"
                             )}
                         </motion.button>
                     </form>
 
                     <p className="mt-6 text-center text-sm text-neutral-400">
-                        Não tem uma conta?
-                        <button
-                            type="button"
+                        Dont have an account?
+                        <Link
+                            to="/register"
                             className="ml-1 text-neutral-200 hover:underline"
-                            onClick={() => {
-                            }}
                         >
-                            Criar conta
-                        </button>
+                            Sign Up
+                        </Link>
                     </p>
                 </div>
             </motion.div>

@@ -43,10 +43,10 @@ const TagInput = ({ id, label, placeholder, values = [], onChange }) => {
                 <button
                     type="button"
                     onClick={addTag}
-                    className="inline-flex items-center gap-1 rounded-lg bg-white/90 text-black text-sm px-3 py-2.5 hover:bg-white transition"
+                    className="inline-flex items-center cursor-pointer gap-1 rounded-lg bg-white/90 text-black text-sm px-3 py-2.5 hover:bg-white transition"
                 >
                     <Plus size={16} />
-                    Adicionar
+                    Add
                 </button>
             </div>
 
@@ -60,7 +60,7 @@ const TagInput = ({ id, label, placeholder, values = [], onChange }) => {
               {tag}
                             <button
                                 type="button"
-                                className="text-neutral-300 hover:text-white"
+                                className="text-neutral-300 cursor-pointer hover:text-white"
                                 onClick={() => removeTag(idx)}
                                 aria-label={`Remover ${tag}`}
                             >

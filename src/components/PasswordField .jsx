@@ -4,9 +4,9 @@ import { Lock, Eye, EyeOff } from "lucide-react";
 
 const PasswordField = ({
                            id = "password",
-                           label = "Senha",
+                           label = "Password",
                            required = true,
-                           placeholder = "Sua senha",
+                           placeholder = "****",
                            value,
                            onChange,
                            onBlur,
@@ -38,7 +38,7 @@ const PasswordField = ({
                 />
                 <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-200"
+                    className="absolute cursor-pointer inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-200"
                     onClick={() => setVisible((v) => !v)}
                     aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
                 >

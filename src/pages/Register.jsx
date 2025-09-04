@@ -5,89 +5,93 @@ import {
     Phone,
     MapPin,
     Calendar,
-    Image as ImageIcon,
     User,
-    Github,
-    Linkedin,
-    Instagram,
     Loader2,
 } from "lucide-react";
 import FormField from "../components/FormField .jsx";
 import PasswordField from "../components/PasswordField .jsx";
 import TagInput from "../components/TagInput .jsx";
 import {Particles} from "../components/Particles.jsx";
-
-const initialState = {
-    name: "",
-    email: "",
-    phoneNumber: "",
-    password: "",
-    sex: "",
-    location: "",
-    aboutMe: "",
-    profileImageUrl: "",
-    dateOfBirth: "",
-    githubUrl: "",
-    linkedinUrl: "",
-    instagramUrl: "",
-    majorSkills: [],
-    toolChain: [],
-};
+import {Link} from "react-router-dom";
+import ProfilePhotoSelector from "../components/ProfilePhotoSelector.jsx";
 
 const Register = () => {
-    const [form, setForm] = useState(initialState);
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState(null);
+    const [profilePhoto, setProfilePhoto] = useState(null);
+    const [sex, setSex] = useState("");
+    const [location, setLocation] = useState("");
+    const [aboutMe, setAboutMe] = useState("");
+    const [dateOfBirth, setDateOfBirth] = useState(null);
+    const [majorSkills, setMajorSkills] = useState([]);
+    const [toolChain, setToolChain] = useState([]);
 
-    const setField = (key, value) => {
-        setForm((f) => ({ ...f, [key]: value }));
-    };
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const validate = () => {
         const e = {};
-        if (!form.name.trim()) e.name = "Nome é obrigatório.";
-        if (!form.email.trim()) e.email = "E-mail é obrigatório.";
-        else if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "E-mail inválido.";
-        if (!form.password || form.password.length < 6)
-            e.password = "Senha deve ter ao menos 6 caracteres.";
-        if (!form.dateOfBirth) e.dateOfBirth = "Data de nascimento é obrigatória.";
-        if (form.phoneNumber && !/^\d{7,15}$/.test(String(form.phoneNumber)))
-            e.phoneNumber = "Telefone deve conter apenas dígitos (7 a 15).";
+        if (!userName.trim()) e.name = "Please fill your name.";
+        if (!email.trim()) e.email = "Please fill your e-mail.";
+        else if (!/^\S+@\S+\.\S+$/.test(email)) e.email = "Invalid e-mail.";
+        if (!password || password.length < 6)
+            e.password = "Password must be at least 6 characters long.";
+        if (!dateOfBirth) e.dateOfBirth = "Date of birth is mandatory.";
+        if (phoneNumber && !/^\d{7,15}$/.test(String(phoneNumber)))
+            e.phoneNumber = "Telephone number must contain only digits (9).";
         return e;
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
         const eMap = validate();
-        setErrors(eMap);
+        setError(eMap);
+        console.log(eMap);
         if (Object.keys(eMap).length > 0) return;
 
         setLoading(true);
         try {
             const payload = {
-                name: form.name.trim(),
-                email: form.email.trim(),
-                phoneNumber: form.phoneNumber ? Number(form.phoneNumber) : null,
-                password: form.password,
-                sex: form.sex || null,
-                location: form.location || null,
-                aboutMe: form.aboutMe || null,
-                profileImageUrl: form.profileImageUrl || null,
-                dateOfBirth: form.dateOfBirth, // "YYYY-MM-DD"
-                githubUrl: form.githubUrl || null,
-                linkedinUrl: form.linkedinUrl || null,
-                instagramUrl: form.instagramUrl || null,
-                majorSkills: form.majorSkills,
-                toolChain: form.toolChain,
+                name: userName,
+                email: email.trim(),
+                phoneNumber: phoneNumber ? Number(phoneNumber) : null,
+                password: password,
+                sex: sex || null,
+                location: location || null,
+                aboutMe: aboutMe || "No about me yet.",
+                profileImageUrl: profilePhoto || null,
+                dateOfBirth: dateOfBirth, // "YYYY-MM-DD"
+                githubUrl: null,
+                linkedinUrl: null,
+                instagramUrl: null,
+                majorSkills: majorSkills,
+                toolChain: toolChain,
             };
 
-            await new Promise((r) => setTimeout(r, 900));
-        } catch (err) {
+            /*
+            const response = await axiosConfig.post(API_ENDPOINTS.REGISTER,
+                {userName, email, password, profileImageUrl})
+            if (response.status === 201) {
+                toast.success("User registered successfully!");
+                navigate("/login");
+            } else {
+                setError("An error occurred while registering. Please try again.");
+            }
+            console.log(
+                "User registered successfully:",
+                response.data
+            )        } catch (err) {
             console.error(err);
-        } finally {
+            */
+        } catch (error) {
+            console.error("Error registering user:", error);
+            setError("An error occurred while registering. Please try again.");
+        }finally {
             setLoading(false);
         }
-    };
+    }
 
     return (
         <section className="relative min-h-screen w-full flex items-center justify-center">
@@ -122,6 +126,9 @@ const Register = () => {
                         </p>
                     </header>
 
+                    <div className="flex justify-center mb-6">
+                        <ProfilePhotoSelector/>
+                    </div>
                     <form onSubmit={onSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                             <FormField
@@ -130,9 +137,9 @@ const Register = () => {
                                 required
                                 placeholder="Your Frist and Last name"
                                 icon={User}
-                                value={form.name}
-                                onChange={(e) => setField("name", e.target.value)}
-                                error={errors.name}
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value)}
+                                error={error}
                                 autoComplete="name"
                             />
 
@@ -143,9 +150,9 @@ const Register = () => {
                                 placeholder="JohnDoe@email.com"
                                 icon={Mail}
                                 type="email"
-                                value={form.email}
-                                onChange={(e) => setField("email", e.target.value)}
-                                error={errors.email}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                error={error}
                                 autoComplete="email"
                             />
 
@@ -155,20 +162,20 @@ const Register = () => {
                                 placeholder="Ex.: 5511999999999"
                                 icon={Phone}
                                 type="tel"
-                                value={form.phoneNumber}
-                                onChange={(e) => setField("phoneNumber", e.target.value.replace(/[^\d]/g, ""))}
-                                error={errors.phoneNumber}
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                error={error}
                                 autoComplete="tel"
                             />
 
                             <div className="space-y-2">
                                 <label htmlFor="sex" className="text-sm font-light">
-                                    Sexo
+                                    Sex
                                 </label>
                                 <select
                                     id="sex"
-                                    value={form.sex}
-                                    onChange={(e) => setField("sex", e.target.value)}
+                                    value={sex}
+                                    onChange={(e) => setSex(e.target.value)}
                                     className="w-full rounded-lg bg-black/20 text-sm sm:text-base px-3 py-2.5 ring-1 ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-gray-500/70 transition"
                                 >
                                     <option value="">Select</option>
@@ -182,8 +189,8 @@ const Register = () => {
                                 label="Location"
                                 placeholder="City, Country"
                                 icon={MapPin}
-                                value={form.location}
-                                onChange={(e) => setField("location", e.target.value)}
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
                             />
 
                             <FormField
@@ -192,9 +199,9 @@ const Register = () => {
                                 required
                                 type="date"
                                 icon={Calendar}
-                                value={form.dateOfBirth}
-                                onChange={(e) => setField("dateOfBirth", e.target.value)}
-                                error={errors.dateOfBirth}
+                                value={dateOfBirth}
+                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                error={error}
                                 autoComplete="bday"
                             />
                         </div>
@@ -203,9 +210,9 @@ const Register = () => {
                             id="password"
                             label="Password"
                             required
-                            value={form.password}
-                            onChange={(e) => setField("password", e.target.value)}
-                            error={errors.password}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            error={error}
                             autoComplete="new-password"
                         />
 
@@ -215,66 +222,28 @@ const Register = () => {
                             </label>
                             <textarea
                                 id="aboutMe"
-                                value={form.aboutMe}
-                                onChange={(e) => setField("aboutMe", e.target.value)}
+                                value={aboutMe}
+                                onChange={(e) => setAboutMe(e.target.value)}
                                 placeholder="Tell us a little about yourself..."
                                 rows={4}
                                 className="w-full rounded-lg bg-black/20 text-sm sm:text-base placeholder-neutral-500 px-3 py-2.5 ring-1 ring-gray-700/60 focus:outline-none focus:ring-2 focus:ring-gray-500/70 transition"
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                            <FormField
-                                id="profileImageUrl"
-                                label="URL da Imagem de Perfil"
-                                placeholder="https://..."
-                                icon={ImageIcon}
-                                value={form.profileImageUrl}
-                                onChange={(e) => setField("profileImageUrl", e.target.value)}
-                            />
-
-                            <FormField
-                                id="githubUrl"
-                                label="GitHub"
-                                placeholder="https://github.com/seu-usuario"
-                                icon={Github}
-                                value={form.githubUrl}
-                                onChange={(e) => setField("githubUrl", e.target.value)}
-                            />
-
-                            <FormField
-                                id="linkedinUrl"
-                                label="LinkedIn"
-                                placeholder="https://linkedin.com/in/seu-usuario"
-                                icon={Linkedin}
-                                value={form.linkedinUrl}
-                                onChange={(e) => setField("linkedinUrl", e.target.value)}
-                            />
-
-                            <FormField
-                                id="instagramUrl"
-                                label="Instagram"
-                                placeholder="https://instagram.com/seu-usuario"
-                                icon={Instagram}
-                                value={form.instagramUrl}
-                                onChange={(e) => setField("instagramUrl", e.target.value)}
-                            />
-                        </div>
-
                         <TagInput
                             id="majorSkills"
-                            label="Principais Skills"
-                            placeholder="Digite a skill e pressione Enter ou clique em Adicionar"
-                            values={form.majorSkills}
-                            onChange={(vals) => setField("majorSkills", vals)}
+                            label="Major Skills"
+                            placeholder="Enter the skill and press Enter or click Add"
+                            values={majorSkills}
+                            onChange={(vals) => setMajorSkills(vals)}
                         />
 
                         <TagInput
                             id="toolChain"
-                            label="Ferramentas (Toolchain)"
-                            placeholder="Digite uma ferramenta e pressione Enter ou clique em Adicionar"
-                            values={form.toolChain}
-                            onChange={(vals) => setField("toolChain", vals)}
+                            label="Toolchain"
+                            placeholder="Type in a tool and press Enter or click Add"
+                            values={toolChain}
+                            onChange={(vals) => setToolChain(vals)}
                         />
 
                         <motion.button
@@ -282,29 +251,26 @@ const Register = () => {
                             whileHover={{ scale: loading ? 1 : 1.02 }}
                             whileTap={{ scale: loading ? 1 : 0.98 }}
                             disabled={loading}
-                            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-white/90 text-black font-medium py-2.5 transition hover:bg-white disabled:opacity-70"
+                            className="w-full cursor-pointer inline-flex items-center justify-center gap-2 rounded-lg bg-white/90 text-black font-medium py-2.5 transition hover:bg-white disabled:opacity-70"
                         >
                             {loading ? (
                                 <>
                                     <Loader2 className="animate-spin" size={18} />
-                                    Criando conta...
+                                    Creating account...
                                 </>
                             ) : (
-                                "Registrar"
+                                "Sign Up"
                             )}
                         </motion.button>
 
                         <p className="text-center text-sm text-neutral-400">
-                            Já tem uma conta?
-                            <button
-                                type="button"
-                                className="ml-1 text-neutral-200 hover:underline"
-                                onClick={() => {
-                                    // navegue para a página de login
-                                }}
+                            Already have an account?
+                            <Link
+                                to="/login"
+                                className="ml-1 text-neutral-200 hover:underline cursor-pointer"
                             >
-                                Entrar
-                            </button>
+                                Login
+                            </Link>
                         </p>
                     </form>
                 </div>
